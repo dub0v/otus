@@ -1,44 +1,20 @@
 ---
 - hosts: all
   become: true
-  become_user: root
   tasks:
+       
+     - name: Install
+       ansible.builtin.yum:
+         name: 
+            - mdadm
+            - smartmontools 
+            - hdparm 
+            - gdisk
+         state: present  
 
-       
-     - name: cd
-       ansible.builtin.shell: cd /etc/yum.repos.d/
-
-     - name: resume 
-       ansible.builtin.shell: sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
-       
-     - name: resume repo
-       ansible.builtin.shell: sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
-       
-     - name: update
-       ansible.builtin.shell: yum update -y  
-
-     - name: add repo
-       ansible.builtin.shell: sudo yum install -y https://www.elrepo.org/elrepo-release-8.el8.elrepo.noarch.rpm
-       
-     - name: install core
-       ansible.builtin.shell: sudo yum --enablerepo elrepo-kernel install kernel-ml -y
+     - name: RAID 
+       ansible.builtin.shell: mdadm --create --verbose /dev/md0 -l 1 -n 4 /dev/sd{b,c,d,e}
        
 
-         
-     - name: reboot system 
-       reboot: 
-         msg: "reload"
-         connect_timeout: 5
-         reboot_timeout: 600
-         post_reboot_delay: 30
-         test_command: whoami
-
-
-
-
-
-
-        
-
        
- 
+
